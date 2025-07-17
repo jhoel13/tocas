@@ -1,0 +1,312 @@
+import os
+import webbrowser
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+import threading
+
+def crear_pagina_stitch():
+    """Crea el archivo HTML con la página de Stitch"""
+    
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>¿Me amas? - Stitch</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                overflow-x: hidden;
+            }
+            
+            .container {
+                text-align: center;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                padding: 40px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .stitch-image {
+                width: 200px;
+                height: 200px;
+                margin: 20px auto;
+                background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23006bb3"/><circle cx="80" cy="80" r="15" fill="black"/><circle cx="120" cy="80" r="15" fill="black"/><ellipse cx="100" cy="120" rx="20" ry="10" fill="black"/><path d="M60 60 Q100 40 140 60" stroke="black" stroke-width="3" fill="none"/><path d="M60 140 Q100 160 140 140" stroke="black" stroke-width="3" fill="none"/></svg>') no-repeat center;
+                background-size: contain;
+                animation: bounce 2s infinite;
+            }
+            
+            .question {
+                font-size: 2.5em;
+                color: white;
+                margin: 30px 0;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                font-weight: bold;
+            }
+            
+            .buttons-container {
+                display: flex;
+                gap: 30px;
+                justify-content: center;
+                margin-top: 30px;
+                position: relative;
+                height: 80px;
+            }
+            
+            .btn {
+                padding: 15px 30px;
+                font-size: 1.2em;
+                font-weight: bold;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                position: relative;
+            }
+            
+            .btn-si {
+                background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+                color: white;
+            }
+            
+            .btn-si:hover {
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            }
+            
+            .btn-no {
+                background: linear-gradient(45deg, #4ecdc4, #6dd5ed);
+                color: white;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-no:hover {
+                transform: scale(1.05);
+            }
+            
+            .celebration {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 20, 147, 0.9);
+                z-index: 1000;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+            
+            .celebration h1 {
+                font-size: 4em;
+                color: white;
+                margin-bottom: 20px;
+                animation: pulse 1s infinite;
+            }
+            
+            .heart {
+                font-size: 3em;
+                color: red;
+                animation: heartbeat 1s infinite;
+            }
+            
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+            
+            @keyframes heartbeat {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.3); }
+            }
+            
+            .floating-hearts {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                overflow: hidden;
+            }
+            
+            .floating-heart {
+                position: absolute;
+                font-size: 2em;
+                color: red;
+                animation: floatUp 3s linear infinite;
+            }
+            
+            @keyframes floatUp {
+                0% {
+                    transform: translateY(100vh) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-100px) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="stitch-image"></div>
+            <div class="question">¿Me amas?</div>
+            <div class="buttons-container">
+                <button class="btn btn-si" onclick="respuestaSi()">Sí ❤️</button>
+                <button class="btn btn-no" id="btnNo" onclick="respuestaNo()">No 💔</button>
+            </div>
+        </div>
+        
+        <div class="celebration" id="celebration">
+            <h1>¡Sabía que me amabas! 💕</h1>
+            <div class="heart">❤️💙💜💚💛</div>
+            <div class="floating-hearts" id="floatingHearts"></div>
+        </div>
+        
+        <script>
+            const btnNo = document.getElementById('btnNo');
+            let moveCount = 0;
+            
+            // Función para mover el botón "No"
+            function moverBotonNo() {
+                const container = document.querySelector('.buttons-container');
+                const containerRect = container.getBoundingClientRect();
+                
+                // Generar posición aleatoria dentro del contenedor
+                const maxX = containerRect.width - btnNo.offsetWidth;
+                const maxY = containerRect.height - btnNo.offsetHeight;
+                
+                const newX = Math.random() * maxX;
+                const newY = Math.random() * maxY;
+                
+                btnNo.style.position = 'absolute';
+                btnNo.style.left = newX + 'px';
+                btnNo.style.top = newY + 'px';
+                
+                moveCount++;
+                
+                // Después de varios movimientos, hacer el botón más pequeño
+                if (moveCount > 3) {
+                    btnNo.style.transform = 'scale(0.8)';
+                    btnNo.innerHTML = 'No 😢';
+                }
+                
+                if (moveCount > 6) {
+                    btnNo.style.transform = 'scale(0.6)';
+                    btnNo.innerHTML = 'No... 😭';
+                }
+            }
+            
+            // Agregar evento de hover al botón "No"
+            btnNo.addEventListener('mouseenter', moverBotonNo);
+            btnNo.addEventListener('touchstart', moverBotonNo);
+            
+            function respuestaSi() {
+                document.getElementById('celebration').style.display = 'flex';
+                crearCorazonesFlotantes();
+                
+                // Reproducir sonido de celebración (opcional)
+                // new Audio('data:audio/wav;base64,...').play();
+            }
+            
+            function respuestaNo() {
+                // Mover el botón cuando se intente hacer click
+                moverBotonNo();
+                
+                // Mostrar mensaje gracioso
+                setTimeout(() => {
+                    alert('¡No puedes escapar de mi amor! 💕');
+                }, 500);
+            }
+            
+            function crearCorazonesFlotantes() {
+                const container = document.getElementById('floatingHearts');
+                const hearts = ['❤️', '💙', '💜', '💚', '💛', '🧡', '💕', '💖'];
+                
+                setInterval(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    container.appendChild(heart);
+                    
+                    // Eliminar el corazón después de la animación
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 3000);
+                }, 300);
+            }
+        </script>
+    </body>
+    </html>
+    """
+    
+    # Crear el archivo HTML
+    with open('stitch_love.html', 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    return os.path.abspath('stitch_love.html')
+
+def iniciar_servidor():
+    """Inicia un servidor HTTP local para servir la página"""
+    class CustomHandler(SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=os.getcwd(), **kwargs)
+    
+    server = HTTPServer(('localhost', 8000), CustomHandler)
+    print("Servidor iniciado en http://localhost:8000")
+    server.serve_forever()
+
+def main():
+    """Función principal"""
+    print("🎉 Generando página de Stitch...")
+    
+    # Crear la página HTML
+    archivo_html = crear_pagina_stitch()
+    print(f"✅ Archivo creado: {archivo_html}")
+    
+    # Iniciar servidor en un hilo separado
+    servidor_thread = threading.Thread(target=iniciar_servidor, daemon=True)
+    servidor_thread.start()
+    
+    # Abrir la página en el navegador
+    print("🌐 Abriendo en el navegador...")
+    webbrowser.open('http://localhost:8000/stitch_love.html')
+    
+    print("\n📱 Para compartir por WhatsApp:")
+    print("1. La página se abrirá automáticamente en tu navegador")
+    print("2. Copia la URL: http://localhost:8000/stitch_love.html")
+    print("3. Comparte esta URL por WhatsApp")
+    print("\n⚠️  IMPORTANTE: El servidor debe estar ejecutándose para que funcione")
+    print("💡 Presiona Ctrl+C para detener el servidor")
+    
+    try:
+        # Mantener el servidor activo
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("\n🛑 Servidor detenido")
+
+if __name__ == "__main__":
+    main()
