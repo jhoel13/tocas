@@ -1,385 +1,641 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "50fd51de-cd84-4bd6-8380-062ba64dc110",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "🎉 Generando página de Stitch...\n",
-      "✅ Archivo creado: C:\\Users\\jhoel\\stitch_love.html\n",
-      "🌐 Abriendo en el navegador...\n",
-      "Servidor iniciado en http://localhost:8000\n",
-      "\n",
-      "📱 Para compartir por WhatsApp:\n",
-      "1. La página se abrirá automáticamente en tu navegador\n",
-      "2. Copia la URL: http://localhost:8000/stitch_love.html\n",
-      "3. Comparte esta URL por WhatsApp\n",
-      "\n",
-      "⚠️  IMPORTANTE: El servidor debe estar ejecutándose para que funcione\n",
-      "💡 Presiona Ctrl+C para detener el servidor\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "127.0.0.1 - - [17/Jul/2025 17:25:06] \"GET /stitch_love.html HTTP/1.1\" 200 -\n",
-      "127.0.0.1 - - [17/Jul/2025 17:25:09] code 404, message File not found\n",
-      "127.0.0.1 - - [17/Jul/2025 17:25:09] \"GET /favicon.ico HTTP/1.1\" 404 -\n",
-      "127.0.0.1 - - [17/Jul/2025 17:26:54] \"GET / HTTP/1.1\" 200 -\n",
-      "127.0.0.1 - - [17/Jul/2025 17:27:38] \"GET / HTTP/1.1\" 200 -\n",
-      "127.0.0.1 - - [17/Jul/2025 17:27:56] \"GET /stitch_love.html HTTP/1.1\" 304 -\n"
-     ]
+<!DOCTYPE html  "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.INGENIERÍA HIDRÁULICA">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fenómeno El Niño - Impacto en Perú</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #1a2980;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #26d0ce;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 3px solid #26d0ce;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 25px 0;
+        }
+        
+        .impact-list {
+            list-style: none;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #1a2980;
+        }
+        
+        .impact-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+        }
+        
+        .impact-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .impact-list li:before {
+            content: "🌡️";
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .temperature-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(90deg, #2193b0, #6dd5ed);
+            border-radius: 10px;
+            color: white;
+            margin: 20px 0;
+        }
+        
+        .temp-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: #1a2980;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #26d0ce;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .data-table th {
+            background: #1a2980;
+            color: white;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #fdfd96 0%, #fdfd96 100%);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: white;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><p>INGENIERÍA HIDRAULICA UNC<P>🌊 Fenómeno El Niño en Perú</h1>
+            <p class="subtitle">Análisis de impacto climático en zonas costeras y andinas - Visualización interactiva de datos</p>
+        </header>
+        
+        <div class="card">
+            <h2>📍 Zona de Mayor Calentamiento</h2>
+            <p>El Fenómeno El Niño produce el mayor aumento de temperatura en el <span class="highlight">Pacífico Oriental</span>, frente a las costas de Perú y Ecuador.</p>
+            
+            <div class="temperature-indicator">
+                <div>
+                    <h3>Temperatura Normal</h3>
+                    <div class="temp-value">18°C</div>
+                </div>
+                <div style="font-size: 2rem;">→</div>
+                <div>
+                    <h3>Durante El Niño</h3>
+                    <div class="temp-value">28°C</div>
+                </div>
+            </div>
+            
+            <div class="map-container" id="map"></div>
+            <p class="subtitle">Mapa de anomalías térmicas del Océano Pacífico durante eventos El Niño</p>
+        </div>
+        
+        <div class="card">
+            <h2>📈 Evolución de Temperaturas 1980-2023</h2>
+            <div class="chart-container">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+            <div class="controls">
+                <button onclick="updateChart('temperature')">Temperatura</button>
+                <button onclick="updateChart('precipitation')">Precipitación</button>
+                <button onclick="updateChart('soi')">Índice SOI</button>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>🔥 ¿Por qué tanto calor?</h2>
+                <ul class="impact-list">
+                    <li><strong>Vientos alisios débiles:</strong> No desplazan aguas cálidas</li>
+                    <li><strong>Afloramiento reducido:</strong> Menos aguas frías profundas</li>
+                    <li><strong>Corrientes inversas:</strong> Agua cálida de Indonesia regresa</li>
+                    <li><strong>Retroceso de Humboldt:</strong> La corriente fría se debilita</li>
+                    <li><strong>Realimentación positiva:</strong> Más calor = más evaporación = más nubes = más calor retenido</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>💥 Cadena de Desastres</h2>
+                <ul class="impact-list">
+                    <li><strong>Lluvias extremas:</strong> 10x lo normal en desiertos</li>
+                    <li><strong>Inundaciones:</strong> Ríos sobre capacidad (Piura 2017: 3,400 m³/s)</li>
+                    <li><strong>Huaicos:</strong> 158 eventos registrados en 2017</li>
+                    <li><strong>Pérdidas económicas:</strong> USD 7,000 millones (1998)</li>
+                    <li><strong>Impacto andino:</strong> Deshielo acelerado, lagunas inestables</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🏔️ Impacto en Lagunas Altoandinas</h2>
+            <p>Para tus lagunas de estudio en Cajamarca (Sulluscocha y Mataracocha):</p>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Condición Normal</th>
+                        <th>Durante El Niño</th>
+                        <th>Impacto en Balance Hídrico</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Precipitación</strong></td>
+                        <td>Estacional (nov-mar)</td>
+                        <td style="background:#ffebee; color:#c62828;"><strong>Extrema e inusual</strong></td>
+                        <td>Aporte hídrico brusco</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temperatura</strong></td>
+                        <td>Frío andino típico</td>
+                        <td style="background:#fff3e0; color:#ef6c00;"><strong>+2 a +4°C</strong></td>
+                        <td>Mayor evaporación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Radiación</strong></td>
+                        <td>Alta por altitud</td>
+                        <td style="background:#e8f5e9; color:#2e7d32;"><strong>Disminución por nubosidad</strong></td>
+                        <td>Menos energía para evaporación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Humedad</strong></td>
+                        <td>Relativamente baja</td>
+                        <td style="background:#e3f2fd; color:#1565c0;"><strong>Muy alta</strong></td>
+                        <td>Disminución del déficit de presión de vapor</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Simulación de Impacto en Cajamarca</h2>
+            <div class="chart-container">
+                <canvas id="impactChart"></canvas>
+            </div>
+            <div class="controls">
+                <button onclick="simulateScenario('normal')">Condición Normal</button>
+                <button onclick="simulateScenario('nino_moderado')">El Niño Moderado</button>
+                <button onclick="simulateScenario('nino_fuerte')">El Niño Fuerte</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>💻 Código de Análisis Básico</h2>
+            <pre style="background: #f5f5f5; padding: 20px; border-radius: 10px; overflow-x: auto;">
+<code>
+# Análisis de impacto de El Niño en lagunas altoandinas
+# Python - Análisis básico de datos climáticos
+
+import numpy as np
+import pandas as pd
+
+def calcular_balance_hidrico(precipitacion, evaporacion, infiltracion=0.2):
+    """
+    Calcula el balance hídrico de una laguna altoandina
+    """
+    # Ajuste por temperatura durante El Niño
+    factor_temperatura = 1.3  # Aumento del 30% en evaporación
+    
+    evaporacion_ajustada = evaporacion * factor_temperatura
+    balance = precipitacion - evaporacion_ajustada - infiltracion
+    
+    return {
+        'precipitacion_mm': precipitacion,
+        'evaporacion_mm': evaporacion_ajustada,
+        'balance_mm': balance,
+        'estado': 'superavit' if balance > 0 else 'deficit'
     }
-   ],
-   "source": [
-    "import os\n",
-    "import webbrowser\n",
-    "from http.server import HTTPServer, SimpleHTTPRequestHandler\n",
-    "import threading\n",
-    "\n",
-    "def crear_pagina_stitch():\n",
-    "    \"\"\"Crea el archivo HTML con la página de Stitch\"\"\"\n",
-    "    \n",
-    "    html_content = \"\"\"\n",
-    "    <!DOCTYPE html>\n",
-    "    <html lang=\"es\">\n",
-    "    <head>\n",
-    "        <meta charset=\"UTF-8\">\n",
-    "        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n",
-    "        <title>¿Me amas? - Stitch</title>\n",
-    "        <style>\n",
-    "            body {\n",
-    "                font-family: 'Arial', sans-serif;\n",
-    "                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n",
-    "                margin: 0;\n",
-    "                padding: 0;\n",
-    "                min-height: 100vh;\n",
-    "                display: flex;\n",
-    "                flex-direction: column;\n",
-    "                justify-content: center;\n",
-    "                align-items: center;\n",
-    "                overflow-x: hidden;\n",
-    "            }\n",
-    "            \n",
-    "            .container {\n",
-    "                text-align: center;\n",
-    "                background: rgba(255, 255, 255, 0.1);\n",
-    "                border-radius: 20px;\n",
-    "                padding: 40px;\n",
-    "                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);\n",
-    "                backdrop-filter: blur(10px);\n",
-    "                border: 1px solid rgba(255, 255, 255, 0.2);\n",
-    "            }\n",
-    "            \n",
-    "            .stitch-image {\n",
-    "                width: 200px;\n",
-    "                height: 200px;\n",
-    "                margin: 20px auto;\n",
-    "                background: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 200\"><circle cx=\"100\" cy=\"100\" r=\"80\" fill=\"%23006bb3\"/><circle cx=\"80\" cy=\"80\" r=\"15\" fill=\"black\"/><circle cx=\"120\" cy=\"80\" r=\"15\" fill=\"black\"/><ellipse cx=\"100\" cy=\"120\" rx=\"20\" ry=\"10\" fill=\"black\"/><path d=\"M60 60 Q100 40 140 60\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/><path d=\"M60 140 Q100 160 140 140\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/></svg>') no-repeat center;\n",
-    "                background-size: contain;\n",
-    "                animation: bounce 2s infinite;\n",
-    "            }\n",
-    "            \n",
-    "            .question {\n",
-    "                font-size: 2.5em;\n",
-    "                color: white;\n",
-    "                margin: 30px 0;\n",
-    "                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);\n",
-    "                font-weight: bold;\n",
-    "            }\n",
-    "            \n",
-    "            .buttons-container {\n",
-    "                display: flex;\n",
-    "                gap: 30px;\n",
-    "                justify-content: center;\n",
-    "                margin-top: 30px;\n",
-    "                position: relative;\n",
-    "                height: 80px;\n",
-    "            }\n",
-    "            \n",
-    "            .btn {\n",
-    "                padding: 15px 30px;\n",
-    "                font-size: 1.2em;\n",
-    "                font-weight: bold;\n",
-    "                border: none;\n",
-    "                border-radius: 25px;\n",
-    "                cursor: pointer;\n",
-    "                transition: all 0.3s ease;\n",
-    "                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);\n",
-    "                position: relative;\n",
-    "            }\n",
-    "            \n",
-    "            .btn-si {\n",
-    "                background: linear-gradient(45deg, #ff6b6b, #ff8e8e);\n",
-    "                color: white;\n",
-    "            }\n",
-    "            \n",
-    "            .btn-si:hover {\n",
-    "                transform: scale(1.1);\n",
-    "                box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);\n",
-    "            }\n",
-    "            \n",
-    "            .btn-no {\n",
-    "                background: linear-gradient(45deg, #4ecdc4, #6dd5ed);\n",
-    "                color: white;\n",
-    "                transition: all 0.3s ease;\n",
-    "            }\n",
-    "            \n",
-    "            .btn-no:hover {\n",
-    "                transform: scale(1.05);\n",
-    "            }\n",
-    "            \n",
-    "            .celebration {\n",
-    "                display: none;\n",
-    "                position: fixed;\n",
-    "                top: 0;\n",
-    "                left: 0;\n",
-    "                width: 100%;\n",
-    "                height: 100%;\n",
-    "                background: rgba(255, 20, 147, 0.9);\n",
-    "                z-index: 1000;\n",
-    "                justify-content: center;\n",
-    "                align-items: center;\n",
-    "                flex-direction: column;\n",
-    "            }\n",
-    "            \n",
-    "            .celebration h1 {\n",
-    "                font-size: 4em;\n",
-    "                color: white;\n",
-    "                margin-bottom: 20px;\n",
-    "                animation: pulse 1s infinite;\n",
-    "            }\n",
-    "            \n",
-    "            .heart {\n",
-    "                font-size: 3em;\n",
-    "                color: red;\n",
-    "                animation: heartbeat 1s infinite;\n",
-    "            }\n",
-    "            \n",
-    "            @keyframes bounce {\n",
-    "                0%, 100% { transform: translateY(0); }\n",
-    "                50% { transform: translateY(-10px); }\n",
-    "            }\n",
-    "            \n",
-    "            @keyframes pulse {\n",
-    "                0%, 100% { transform: scale(1); }\n",
-    "                50% { transform: scale(1.1); }\n",
-    "            }\n",
-    "            \n",
-    "            @keyframes heartbeat {\n",
-    "                0%, 100% { transform: scale(1); }\n",
-    "                50% { transform: scale(1.3); }\n",
-    "            }\n",
-    "            \n",
-    "            .floating-hearts {\n",
-    "                position: absolute;\n",
-    "                top: 0;\n",
-    "                left: 0;\n",
-    "                width: 100%;\n",
-    "                height: 100%;\n",
-    "                pointer-events: none;\n",
-    "                overflow: hidden;\n",
-    "            }\n",
-    "            \n",
-    "            .floating-heart {\n",
-    "                position: absolute;\n",
-    "                font-size: 2em;\n",
-    "                color: red;\n",
-    "                animation: floatUp 3s linear infinite;\n",
-    "            }\n",
-    "            \n",
-    "            @keyframes floatUp {\n",
-    "                0% {\n",
-    "                    transform: translateY(100vh) rotate(0deg);\n",
-    "                    opacity: 1;\n",
-    "                }\n",
-    "                100% {\n",
-    "                    transform: translateY(-100px) rotate(360deg);\n",
-    "                    opacity: 0;\n",
-    "                }\n",
-    "            }\n",
-    "        </style>\n",
-    "    </head>\n",
-    "    <body>\n",
-    "        <div class=\"container\">\n",
-    "            <div class=\"stitch-image\"></div>\n",
-    "            <div class=\"question\">¿Me amas?</div>\n",
-    "            <div class=\"buttons-container\">\n",
-    "                <button class=\"btn btn-si\" onclick=\"respuestaSi()\">Sí ❤️</button>\n",
-    "                <button class=\"btn btn-no\" id=\"btnNo\" onclick=\"respuestaNo()\">No 💔</button>\n",
-    "            </div>\n",
-    "        </div>\n",
-    "        \n",
-    "        <div class=\"celebration\" id=\"celebration\">\n",
-    "            <h1>¡Sabía que me amabas! 💕</h1>\n",
-    "            <div class=\"heart\">❤️💙💜💚💛</div>\n",
-    "            <div class=\"floating-hearts\" id=\"floatingHearts\"></div>\n",
-    "        </div>\n",
-    "        \n",
-    "        <script>\n",
-    "            const btnNo = document.getElementById('btnNo');\n",
-    "            let moveCount = 0;\n",
-    "            \n",
-    "            // Función para mover el botón \"No\"\n",
-    "            function moverBotonNo() {\n",
-    "                const container = document.querySelector('.buttons-container');\n",
-    "                const containerRect = container.getBoundingClientRect();\n",
-    "                \n",
-    "                // Generar posición aleatoria dentro del contenedor\n",
-    "                const maxX = containerRect.width - btnNo.offsetWidth;\n",
-    "                const maxY = containerRect.height - btnNo.offsetHeight;\n",
-    "                \n",
-    "                const newX = Math.random() * maxX;\n",
-    "                const newY = Math.random() * maxY;\n",
-    "                \n",
-    "                btnNo.style.position = 'absolute';\n",
-    "                btnNo.style.left = newX + 'px';\n",
-    "                btnNo.style.top = newY + 'px';\n",
-    "                \n",
-    "                moveCount++;\n",
-    "                \n",
-    "                // Después de varios movimientos, hacer el botón más pequeño\n",
-    "                if (moveCount > 3) {\n",
-    "                    btnNo.style.transform = 'scale(0.8)';\n",
-    "                    btnNo.innerHTML = 'No 😢';\n",
-    "                }\n",
-    "                \n",
-    "                if (moveCount > 6) {\n",
-    "                    btnNo.style.transform = 'scale(0.6)';\n",
-    "                    btnNo.innerHTML = 'No... 😭';\n",
-    "                }\n",
-    "            }\n",
-    "            \n",
-    "            // Agregar evento de hover al botón \"No\"\n",
-    "            btnNo.addEventListener('mouseenter', moverBotonNo);\n",
-    "            btnNo.addEventListener('touchstart', moverBotonNo);\n",
-    "            \n",
-    "            function respuestaSi() {\n",
-    "                document.getElementById('celebration').style.display = 'flex';\n",
-    "                crearCorazonesFlotantes();\n",
-    "                \n",
-    "                // Reproducir sonido de celebración (opcional)\n",
-    "                // new Audio('data:audio/wav;base64,...').play();\n",
-    "            }\n",
-    "            \n",
-    "            function respuestaNo() {\n",
-    "                // Mover el botón cuando se intente hacer click\n",
-    "                moverBotonNo();\n",
-    "                \n",
-    "                // Mostrar mensaje gracioso\n",
-    "                setTimeout(() => {\n",
-    "                    alert('¡No puedes escapar de mi amor! 💕');\n",
-    "                }, 500);\n",
-    "            }\n",
-    "            \n",
-    "            function crearCorazonesFlotantes() {\n",
-    "                const container = document.getElementById('floatingHearts');\n",
-    "                const hearts = ['❤️', '💙', '💜', '💚', '💛', '🧡', '💕', '💖'];\n",
-    "                \n",
-    "                setInterval(() => {\n",
-    "                    const heart = document.createElement('div');\n",
-    "                    heart.className = 'floating-heart';\n",
-    "                    heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];\n",
-    "                    heart.style.left = Math.random() * 100 + '%';\n",
-    "                    heart.style.animationDelay = Math.random() * 2 + 's';\n",
-    "                    \n",
-    "                    container.appendChild(heart);\n",
-    "                    \n",
-    "                    // Eliminar el corazón después de la animación\n",
-    "                    setTimeout(() => {\n",
-    "                        heart.remove();\n",
-    "                    }, 3000);\n",
-    "                }, 300);\n",
-    "            }\n",
-    "        </script>\n",
-    "    </body>\n",
-    "    </html>\n",
-    "    \"\"\"\n",
-    "    \n",
-    "    # Crear el archivo HTML\n",
-    "    with open('stitch_love.html', 'w', encoding='utf-8') as f:\n",
-    "        f.write(html_content)\n",
-    "    \n",
-    "    return os.path.abspath('stitch_love.html')\n",
-    "\n",
-    "def iniciar_servidor():\n",
-    "    \"\"\"Inicia un servidor HTTP local para servir la página\"\"\"\n",
-    "    class CustomHandler(SimpleHTTPRequestHandler):\n",
-    "        def __init__(self, *args, **kwargs):\n",
-    "            super().__init__(*args, directory=os.getcwd(), **kwargs)\n",
-    "    \n",
-    "    server = HTTPServer(('localhost', 8000), CustomHandler)\n",
-    "    print(\"Servidor iniciado en http://localhost:8000\")\n",
-    "    server.serve_forever()\n",
-    "\n",
-    "def main():\n",
-    "    \"\"\"Función principal\"\"\"\n",
-    "    print(\"🎉 Generando página de Stitch...\")\n",
-    "    \n",
-    "    # Crear la página HTML\n",
-    "    archivo_html = crear_pagina_stitch()\n",
-    "    print(f\"✅ Archivo creado: {archivo_html}\")\n",
-    "    \n",
-    "    # Iniciar servidor en un hilo separado\n",
-    "    servidor_thread = threading.Thread(target=iniciar_servidor, daemon=True)\n",
-    "    servidor_thread.start()\n",
-    "    \n",
-    "    # Abrir la página en el navegador\n",
-    "    print(\"🌐 Abriendo en el navegador...\")\n",
-    "    webbrowser.open('http://localhost:8000/stitch_love.html')\n",
-    "    \n",
-    "    print(\"\\n📱 Para compartir por WhatsApp:\")\n",
-    "    print(\"1. La página se abrirá automáticamente en tu navegador\")\n",
-    "    print(\"2. Copia la URL: http://localhost:8000/stitch_love.html\")\n",
-    "    print(\"3. Comparte esta URL por WhatsApp\")\n",
-    "    print(\"\\n⚠️  IMPORTANTE: El servidor debe estar ejecutándose para que funcione\")\n",
-    "    print(\"💡 Presiona Ctrl+C para detener el servidor\")\n",
-    "    \n",
-    "    try:\n",
-    "        # Mantener el servidor activo\n",
-    "        while True:\n",
-    "            pass\n",
-    "    except KeyboardInterrupt:\n",
-    "        print(\"\\n🛑 Servidor detenido\")\n",
-    "\n",
-    "if __name__ == \"__main__\":\n",
-    "    main()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "131de381-c523-4e20-bdea-1900110ad0e3",
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python [conda env:base] *",
-   "language": "python",
-   "name": "conda-base-py"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.12.7"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
+
+# Datos mensuales hipotéticos (mm)
+datos_nino_fuerte = {
+    'Enero': calcular_balance_hidrico(350, 120),
+    'Febrero': calcular_balance_hidrico(420, 140),
+    'Marzo': calcular_balance_hidrico(380, 130),
 }
+
+print("Impacto de El Niño Fuerte en Laguna:")
+for mes, datos in datos_nino_fuerte.items():
+    print(f"{mes}: {datos}")
+</code>
+            </pre>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2026 - Análisis del Fenómeno El Niño | Datos de referencia: NOAA, SENAMHI, ECMWF ERA5<P>INGENIERÍA HIDRÁULICA<P> UNIVERSIDAD NACIONAL DE CAJAMARCA<p>JHOEL TOCAS CERCADO</p>
+        <p>Para uso educativo e investigación climática </p>
+    </footer>
+
+    <script>
+        // Inicializar mapa
+        const map = L.map('map').setView([-5, -85], 3);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Zonas de calentamiento de El Niño
+        const zonasCalentamiento = [
+            {
+                nombre: "Pacífico Oriental",
+                coordenadas: [[-10, -100], [0, -70]],
+                color: "#FF5722",
+                intensidad: "Alta (+4°C)"
+            },
+            {
+                nombre: "Pacífico Central",
+                coordenadas: [[-5, -160], [5, -100]],
+                color: "#FF9800",
+                intensidad: "Media (+2°C)"
+            },
+            {
+                nombre: "Pacífico Occidental",
+                coordenadas: [[-10, 120], [10, 160]],
+                color: "#FFC107",
+                intensidad: "Baja (-1°C)"
+            }
+        ];
+        
+        zonasCalentamiento.forEach(zona => {
+            L.rectangle(zona.coordenadas, {
+                color: zona.color,
+                fillColor: zona.color,
+                fillOpacity: 0.3,
+                weight: 2
+            })
+            .addTo(map)
+            .bindPopup(`<strong>${zona.nombre}</strong><br>Anomalía: ${zona.intensidad}`);
+        });
+        
+        // Marcar Perú
+        L.marker([-9.19, -75.015]).addTo(map)
+            .bindPopup('<strong>Perú</strong><br>Zona de máximo impacto terrestre')
+            .openPopup();
+            
+        L.marker([-7.16, -78.51]).addTo(map)
+            .bindPopup('<strong>Cajamarca</strong><br>Zona de estudio: Lagunas altoandinas')
+            .openPopup();
+        
+        // Gráfico de temperaturas
+        const years = Array.from({length: 44}, (_, i) => 1980 + i);
+        const temperatures = years.map(year => {
+            const base = 22;
+            // Añadir picos de El Niño en años específicos
+            const ninoYears = [1982, 1983, 1997, 1998, 2015, 2016, 2023];
+            if (ninoYears.includes(year)) return base + 3 + Math.random() * 2;
+            if (year === 2017) return base + 2.5 + Math.random() * 1.5;
+            return base + Math.random() * 2;
+        });
+        
+        const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+        let temperatureChart = new Chart(tempCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Temperatura Superficial del Mar (°C)',
+                    data: temperatures,
+                    borderColor: '#FF5722',
+                    backgroundColor: 'rgba(255, 87, 34, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Anomalías Térmicas en Pacífico Oriental (1980-2023)',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const year = context.label;
+                                const events = {
+                                    '1982-83': 'El Niño Extraordinario',
+                                    '1997-98': 'El Niño del Siglo',
+                                    '2015-16': 'El Niño Godzilla',
+                                    '2017': 'El Niño Costero'
+                                };
+                                const event = events[year] || 
+                                    (year >= 1982 && year <= 1983) ? events['1982-83'] :
+                                    (year >= 1997 && year <= 1998) ? events['1997-98'] :
+                                    (year >= 2015 && year <= 2016) ? events['2015-16'] :
+                                    'Año normal';
+                                
+                                return [`${context.dataset.label}: ${context.parsed.y.toFixed(1)}°C`, `Evento: ${event}`];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Temperatura (°C)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Año'
+                        },
+                        ticks: {
+                            maxTicksLimit: 15
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de impacto en lagunas
+        const impactCtx = document.getElementById('impactChart').getContext('2d');
+        let impactChart = new Chart(impactCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Precipitación', 'Evaporación', 'Balance'],
+                datasets: [
+                    {
+                        label: 'Condición Normal',
+                        data: [80, 95, -15],
+                        backgroundColor: '#4CAF50'
+                    },
+                    {
+                        label: 'El Niño Moderado',
+                        data: [180, 130, 50],
+                        backgroundColor: '#FF9800'
+                    },
+                    {
+                        label: 'El Niño Fuerte',
+                        data: [320, 160, 160],
+                        backgroundColor: '#F44336'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Balance Hídrico Mensual en Lagunas Altoandinas (mm)',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const param = context.dataset.label;
+                                const variable = context.label.toLowerCase();
+                                
+                                if (variable === 'balance') {
+                                    const estado = value > 0 ? 'Superávit' : 'Déficit';
+                                    return `${param}: ${value} mm (${estado})`;
+                                }
+                                return `${param}: ${value} mm`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Milímetros (mm)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Funciones de control
+        function updateChart(type) {
+            let newData, newLabel, newColor;
+            
+            switch(type) {
+                case 'temperature':
+                    newData = temperatures;
+                    newLabel = 'Temperatura Superficial del Mar (°C)';
+                    newColor = '#FF5722';
+                    break;
+                    
+                case 'precipitation':
+                    newData = years.map(year => {
+                        const base = 50;
+                        const ninoYears = [1982, 1983, 1997, 1998, 2015, 2016, 2017, 2023];
+                        if (ninoYears.includes(year)) return base + 200 + Math.random() * 100;
+                        return base + Math.random() * 50;
+                    });
+                    newLabel = 'Precipitación Anomalía (%)';
+                    newColor = '#2196F3';
+                    break;
+                    
+                case 'soi':
+                    newData = years.map(year => {
+                        const ninoYears = [1982, 1983, 1997, 1998, 2015, 2016, 2017, 2023];
+                        if (ninoYears.includes(year)) return -2 - Math.random() * 1.5;
+                        return 0.5 - Math.random();
+                    });
+                    newLabel = 'Índice de Oscilación del Sur (SOI)';
+                    newColor = '#9C27B0';
+                    break;
+            }
+            
+            temperatureChart.data.datasets[0].data = newData;
+            temperatureChart.data.datasets[0].label = newLabel;
+            temperatureChart.data.datasets[0].borderColor = newColor;
+            temperatureChart.data.datasets[0].backgroundColor = newColor.replace(')', ', 0.1)').replace('rgb', 'rgba');
+            temperatureChart.update();
+        }
+        
+        function simulateScenario(scenario) {
+            let normalData, ninoModeradoData, ninoFuerteData;
+            
+            switch(scenario) {
+                case 'normal':
+                    normalData = [80, 95, -15];
+                    ninoModeradoData = [180, 130, 50];
+                    ninoFuerteData = [320, 160, 160];
+                    break;
+                    
+                case 'nino_moderado':
+                    normalData = [70, 90, -20];
+                    ninoModeradoData = [220, 140, 80];
+                    ninoFuerteData = [380, 170, 210];
+                    break;
+                    
+                case 'nino_fuerte':
+                    normalData = [60, 85, -25];
+                    ninoModeradoData = [180, 130, 50];
+                    ninoFuerteData = [450, 200, 250];
+                    break;
+            }
+            
+            impactChart.data.datasets[0].data = normalData;
+            impactChart.data.datasets[1].data = ninoModeradoData;
+            impactChart.data.datasets[2].data = ninoFuerteData;
+            impactChart.update();
+        }
+        
+        // Datos históricos de eventos El Niño
+        console.log("Datos históricos de El Niño en Perú:");
+        console.table([
+            { Año: "1982-83", Tipo: "Extraordinario", Daños: "USD 3,300M", Lluvia: "300% normal" },
+            { Año: "1997-98", Tipo: "Del Siglo", Daños: "USD 7,000M", Lluvia: "400% normal" },
+            { Año: "2017", Tipo: "Costero", Daños: "USD 3,100M", Lluvia: "1000% normal" },
+            { Año: "2025-26", Tipo: "Moderado-Fuerte", Daños: "En evaluación", Lluvia: "250% normal" }
+        ]);
+    </script>
+</body>
+</html>
